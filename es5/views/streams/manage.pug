@@ -1,0 +1,138 @@
+extends ../layouts/main
+
+block content
+    main.container-fluid
+        div.row
+            div.col-md-6.col-md-offset-3
+                div.manage-controls.text-center
+                    h1 Stream Management
+                    p Please choose an option below:
+                    button#edit-stream.btn.btn-primary Edit
+                    button#clear-stream.btn.btn-info(data-public=stream.public_key, data-toggle="modal" data-target="#myModalClear") Clear
+
+                    if isAdmin
+                        button#delete-stream.btn.btn-danger(data-public=stream.public_key, data-toggle="modal" data-target="#myModalDelete") Delete
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="myModalDelete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                      <div class="modal-dialog" role="document">
+
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title text-left" id="myModalLabel">Please enter your delete key to delete this stream.</h4>
+                          </div>
+
+                          form.bootbox-form(method="POST", action="/streams/" + stream.public_key + "/delete/" + stream.private_key)
+                              <div class="modal-body text-left">
+                                <input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" name="delete_key">
+                                input(type="hidden", name="public_key", value=stream.public_key)
+                                input(type="hidden", value="DELETE", name="_method")
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-danger">OK</button>
+                              </div>
+
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="myModalClear" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                      <div class="modal-dialog" role="document">
+
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title text-left" id="myModalLabel">Are you sure you want to clear all data from this stream?</h4>
+                          </div>
+
+                          form.bootbox-form(method="POST", action="/streams/" + stream.public_key + "/clear/" + stream.private_key)
+                              <div class="modal-body text-left">
+                                <p>The data are unrecoverable after they are delete.</p>
+                                input(type="hidden",value="PUT",name="_method")
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-danger">OK</button>
+                              </div>
+
+                        </div>
+                      </div>
+                    </div>
+
+                div.edit-container
+                    - var disabled = isAdmin ? false : true;
+                    - var readonly = isAdmin ? false : true;
+                    h1 Edit Stream
+                    form#form_edit_stream(name="updateDataset", data-public=stream.public_key, data-private=stream.private_key, method="POST", action="/streams/" + stream.public_key + '/update/' + stream.private_key)
+                        div.form-group.required
+                            label.control-label(for="inputTitle") Title
+                            input#inputTitle.form-control(type="text", placeholder="NIST Weather", name="title", value=stream.title, required, readonly=readonly)
+                            // input#inputTitle.form-control(type="text", placeholder="NIST Weather", name="title", required, disabled)
+                        div.form-group.required
+                            label.control-label(for="inputDeviceNumber") Device Number
+                            input#inputDeviceNumber.form-control(type="text", placeholder="1234567890", name="device_number", value=stream.device_number, required, readonly=readonly)
+                        div.form-group.required
+                            label.control-label(for="inputDescription") Description
+                            textarea#textareaDescription.form-control(rows="6", placeholder="A SEN-08257 humidity and temp sensor located at NIST in Boulder, CO", name="description", required) #{stream.description}
+                        div.form-group.required
+                            label.control-label(for="inputPublic") Show in Public Stream List?
+                            div
+                                - var visible = stream.hidden == 0 ? true : false;
+                                - var hidden = stream.hidden == 1 ? true : false;
+                                label.radio-inline
+                                    input(type="radio", name="hidden", value="0", checked=visible)
+                                    | Visible
+                                label.radio-inline
+                                    input(type="radio", name="hidden", value="1", checked=hidden)
+                                    | Hidden
+                        <div class="form-group required">
+                            <label for="inputSpecies" class="control-label">Species</label>
+                            if isAdmin
+                                <button class="btn btn-link add-variable-btn"><span class="glyphicon glyphicon-plus-sign"></span></button>
+                            <ul id="speciesList" class="list-unstyled">
+                                - var species = stream.species;
+                                each field, index in species
+                                    <li class="add-variable">
+                                        <div class="row">
+                                            <div class="col-md-5 col-sm-5 col-xs-5">
+                                                input.form-control(name="species[" + index + "][public_name]" placeholder="Pulic Name" value=`${field.public_name}` required readonly=(isAdmin ? false : true))
+                                            </div>
+                                            <div class="col-md-5 col-sm-5 col-xs-5">
+                                                input.form-control(name="species[" + index + "][code_name]" placeholder="Code Name" value=`${field.code_name}` required readonly=(isAdmin ? false : true))
+                                            </div>
+                                            <div class="col-md-2 col-sm-2 col-xs-2">
+                                                if index == 0 || readonly
+                                                    <button class='btn btn-link' disabled><span class='glyphicon glyphicon-ban-circle'></span></button>
+                                                else
+                                                    <button class='btn btn-link delete-variable-btn'><span class='glyphicon glyphicon-minus-sign'></span></button>
+                                            </div>
+                                        </div>
+                                    </li>
+                            </ul>
+                        </div>
+                        div.form-group
+                            label.control-label(for="inputStreamAlias") Stream Alias
+                            input#inputStreamAlias.form-control(type="text", placeholder="nist_weather", name="alias", value=stream.alias, readonly=readonly)
+                            // span.glyphicon.free.glyphicon-remove.form-control-feedback
+                            // span.glyphicon.taken.glyphicon-remove.form-control-feedback
+                            p.help-block.taken This alias is in use by another stream. <br /> <em>e.g. http://127.0.0.1:8080/<span class="alias_example">nist_weather</span></em>
+                        div.form-group
+                            label.control-label(for="inputTags") Tags
+                            - var tags = stream.tags;
+                            input#inputTags.form-control(type="text", placeholder="nist, weather", name="tags", data-role="tagsinput", class="tag-input", value="" + tags)
+                        div.form-group
+                            label.control-label(for="inputLocation") Location
+                            input#autocomplete.form-control(type="text", placeholder="Boulder, CO", name="location[long]", value=stream.location.long)
+                            input(type="hidden", name="location[street_number]", value=stream.location.street_number)
+                            input(type="hidden", name="location[route]", value=stream.location.route)
+                            input(type="hidden", name="location[locality]", value=stream.location.locality)
+                            input(type="hidden", name="location[administrative_area_level_1]", value=stream.location.administrative_area_level_1)
+                            input(type="hidden", name="location[country]", value=stream.location.country)
+                            input(type="hidden", name="location[postal_code]", value=stream.location.postal_code)
+                            input(type="hidden", name="location[lat]", value=stream.location.lat)
+                            input(type="hidden", name="location[lng]", value=stream.location.lng)
+                        input(type="hidden",value="PUT",name="_method")
+                        button#btnSubmit.btn.btn-primary(type="submit") Save

@@ -1,0 +1,32 @@
+extends ../layouts/main
+
+block content
+    main.container-fluid
+        div.row
+            div.col-md-10.col-md-offset-1
+                h1 Public Streams
+
+        each stream, i in streams
+            div.row.stream-item
+                div.col-md-10.col-md-offset-1
+                    h2.stream-item-title.pull-left
+                        a(href="/streams/" + stream.public_key) #{stream.title}
+                    span.small.pull-right.text-right last push: #{stream.last_entry_at ? stream.last_entry_at : 'never'}
+
+                    if stream.species.length
+                        div.stream-item-fields
+                            span.little-label Species
+                            // http://stackoverflow.com/questions/10145946/what-is-causing-the-following-error-string-split-is-not-a-function-in-javascr
+                            - var fields = stream.species;
+                            each field, index in fields
+                                a.stream-item-field #{field.public_name}
+
+                    if stream.tags.length
+                        div.stream-item-tags
+                            span.little-label Tags
+                            - var tags = stream.tags.toString();
+                            - var tags = tags.split(',');
+                            each tag, index in tags
+                                a.stream-item-tag #{tag}
+
+        include ../partials/pager

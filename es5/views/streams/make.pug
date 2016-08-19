@@ -1,0 +1,66 @@
+extends ../layouts/main
+
+block content
+    main.container-fluid
+        div.row
+            div.col-md-6.col-md-offset-3
+                h1 Create a Data Stream
+                form#formAddDataset(name="addStream", method="post", action="/streams")
+                    div.form-group.required
+                        label.control-label(for="inputTitle") Title
+                        input#inputTitle.form-control(type="text", placeholder="NIST Weather", name="title", required)
+                        // input#inputTitle.form-control(type="text", placeholder="NIST Weather", name="title", required, disabled)
+                    div.form-group.required
+                        label.control-label(for="inputDeviceNumber") Device Number
+                        input#inputDeviceNumber.form-control(type="text", placeholder="1234567890", name="device_number", required)
+                    div.form-group.required
+                        label.control-label(for="inputDescription") Description
+                        textarea#textareaDescription.form-control(rows="6", placeholder="A SEN-08257 humidity and temp sensor located at NIST in Boulder, CO", name="description", required)
+                    div.form-group.required
+                        label.control-label(for="inputPublic") Show in Public Stream List?
+                        div
+                            label.radio-inline
+                                input(type="radio", name="hidden", value="0", checked="")
+                                | Visible
+                            label.radio-inline
+                                input(type="radio", name="hidden", value="1")
+                                | Hidden
+                    <div class="form-group required">
+                        <label for="inputSpecies" class="control-label">Species</label><button class="btn btn-link add-variable-btn"><span class="glyphicon glyphicon-plus-sign"></span></button>
+                        <ul id="speciesList" class="list-unstyled">
+                            <li class="add-variable">
+                                <div class="row">
+                                    <div class="col-md-5 col-sm-5 col-xs-5">
+                                        <input type="text" class="form-control" name="species[0][public_name]" placeholder="Pulic Name" required>
+                                    </div>
+                                    <div class="col-md-5 col-sm-5 col-xs-5">
+                                        <input type="text" class="form-control" name="species[0][code_name]" placeholder="Code Name" required>
+                                    </div>
+                                    <div class="col-md-2 col-sm-2 col-xs-2">
+                                        <button class='btn btn-link' disabled><span class='glyphicon glyphicon-ban-circle'></span></button>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    div.form-group
+                        label.control-label(for="inputStreamAlias") Stream Alias
+                        input#inputStreamAlias.form-control(type="text", placeholder="nist_weather", name="alias")
+                        // span.glyphicon.free.glyphicon-remove.form-control-feedback
+                        // span.glyphicon.taken.glyphicon-remove.form-control-feedback
+                        p.help-block.taken This alias is in use by another stream. <br /> <em>e.g. http://127.0.0.1:8080/<span class="alias_example">nist_weather</span></em>
+                    div.form-group
+                        label.control-label(for="inputTags") Tags
+                        input#inputTags.form-control(type="text", placeholder="nist, weather", name="tags", data-role="tagsinput", class="tag-input")
+                    div.form-group
+                        label.control-label(for="inputLocation") Location
+                        <input type="text" class="form-control" id="autocomplete" name="location[long]" value="" placeholder="Boulder, CO">
+                        <input type="hidden" name="location[street_number]" value="">
+                        <input type="hidden" name="location[route]" value="">
+                        <input type="hidden" name="location[locality]" value="">
+                        <input type="hidden" name="location[administrative_area_level_1]" value="">
+                        <input type="hidden" name="location[country]" value="">
+                        <input type="hidden" name="location[postal_code]" value="">
+                        <input type="hidden" name="location[lat]" value="">
+                        <input type="hidden" name="location[lng]" value="">
+                    button#btnSubmit.btn.btn-primary(type="submit") Save

@@ -1,0 +1,36 @@
+extends ../layouts/main
+
+block content
+
+    main.container-fluid
+        div.container
+            div.col-md-4.col-md-offset-4
+                h1.text-center Account Management
+                form(action="/users/" + user._id + "/edit", method="POST", name="updateUser")
+                    div.form-group
+                        label(for="firstname") Firstname
+                        input#inputFirstname.form-control(type="text", placeholder="Firstname", value=user.firstname, name="firstname", required)
+                    div.form-group
+                        label(for="lastname") Lastname
+                        input#inputLastname.form-control(type="text", placeholder="Lastname", value=user.lastname, name="lastname", required)
+                    div.form-group
+                        label(for="email") Email
+                        input#inputEmail.form-control(type="text", placeholder="Email", value=user.email, name="email", required)
+                    div.form-group
+                        label(for="inputName") Username
+                        input#inputName.form-control(type="text", placeholder="Username", value=user.username, name="username", required)
+                    div.form-group
+                        label(for="inputNewPassword") New Password
+                        input#inputNewPassword.form-control(type="password", placeholder="********", name="newPassword")
+                    div.form-group
+                        label(for="inputNewPasswordBis") Confirm
+                        input#inputNewPasswordBis.form-control(type="password", placeholder="********", name="newPasswordConfirm")
+                    input(type="hidden",value="PUT",name="_method")
+                    div.text-center
+                        input(type="hidden", value="PUT", name="_method")
+                        button.btn.btn-primary(type="submit") Save changes
+
+                form(action="/users/" + user._id, method="POST", name="deleteUser")
+                    input(type="hidden", value="DELETE", name="_method")
+                    div.text-center
+                        button.button-delete-account(type="submit") Delete account

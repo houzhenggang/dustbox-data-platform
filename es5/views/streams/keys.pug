@@ -1,0 +1,35 @@
+extends ../layouts/main
+
+block content
+    main.container-fluid
+        div.row.stream-metadata
+            div.col-md-12
+                div.pull-left
+                    h1.stream-title=stream.title
+                    p.small=stream.description
+
+                if stream.tags.length
+                    div.pull-right
+                        span.little-label Tags
+                        - var tags = stream.tags.toString();
+                        - var tags = tags.split(',');
+                        each tag, index in tags
+                            a.stream-item-tag #{tag}
+
+        if isAdmin
+            div.row
+                div.col-md-12
+                    h4 Public URL
+                    pre
+                        a(href=stream.public_url, target="_blank") #{stream.public_url}
+
+                    h4 Public Key
+                    pre #{stream.public_key}
+
+                    h4 Private Key:
+                    pre #{stream.private_key}
+                    p Keep this key secret, and in a safe place. <em> You will not be able to retrieve it.</em>
+
+                    h4 Delete Key:
+                    pre #{stream.delete_key}
+                    p This key can only be used once. Keep this key secret, and in a safe place. <em> You will not be able to retrieve it.</em>

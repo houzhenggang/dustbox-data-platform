@@ -1,0 +1,92 @@
+extends ../layouts/main
+
+block content
+    main.container-fluid
+        div.row.stream-metadata
+            div.col-md-12
+                div.pull-left
+                    h1.stream-title=stream.title
+                    p.small=stream.description
+
+                div.controls.pull-right
+                    <!-- Button trigger modal -->
+                    a.btn.btn-xs.btn-primary.button-manage(data-public=stream.public_key, data-toggle="modal" data-target="#myModal") Manage
+
+                    if isAdmin
+                        a.btn.btn-xs.btn-primary.button-manage(href="/streams/" + stream.public_key + "/keys/" + stream._id, data-public=stream.public_key) Keys
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                      <div class="modal-dialog" role="document">
+
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">Please enter the private key for this stream</h4>
+                          </div>
+
+                          form.bootbox-form(method="POST", action="/streams/" + stream.public_key)
+                              <div class="modal-body">
+                                <input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" name="private_key">
+                                input(type="hidden", name="public_key", value=stream.public_key)
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">OK</button>
+                              </div>
+
+                        </div>
+                      </div>
+                    </div>
+
+                if stream.tags.length
+                    div.pull-right
+                        span.little-label Tags
+                        - var tags = stream.tags.toString();
+                        - var tags = tags.split(',');
+                        each tag, index in tags
+                            a.stream-item-tag #{tag}
+
+        div.row
+            div.col-md-12
+                p.small
+                    strong Created at:
+                    |  #{stream.created_at}
+                p.small
+                    strong Last push:
+                    |  #{stream.last_entry_at ? stream.last_entry_at : 'never'}
+                p.small
+                    strong Total push:
+                    |  #{stream.entries_number ? stream.entries_number : 0}
+
+        if stream.data
+            div.row.stream-data
+                div.col-md-12
+                    table.table.table-striped.text-center.table-hover
+                        thead
+                            tr
+                                each variable, i in stream.data
+                                    th.text-center #{i}
+                        tbody
+                            - var data = stream.data;
+                            - var fields = [];
+                            - for (var key in data) fields.push(key)
+
+                             //=JSON.stringify(data)
+
+                            // Only the prop has values then proceed.
+                            if data[fields[0]].length
+
+                            // Get the values from the first item and loop them.
+                            each value, i in data[fields[0]]
+                                tr
+                                    // Loop the props to make td tags.
+                                    each field in fields
+                                        if (data[field][i] == null)
+                                            td='null'
+                                        else if field === 'timestamp'
+                                            td(class="timestamp")=data[field][i]
+                                        else
+                                            td=data[field][i]
+
+        include ../partials/pager

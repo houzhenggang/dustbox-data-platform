@@ -1,0 +1,17 @@
+extends ../layouts/main
+
+block content
+
+    main.container-fluid
+        div.container
+            div.col-md-4.col-md-offset-4
+                h1.text-center Log In
+                form#formLogin(method="POST", action="/login")
+                    div.form-group
+                        label(for="username") Username
+                        input#inputUsername.form-control(type="text", placeholder="Username", name="username")
+                    div.form-group
+                        label(for="password") Password
+                        input#inputPassword.form-control(type="password", placeholder="*********", name="password")
+                    div.text-center
+                        input.btn.btn-primary(type="submit", value="Log In")

@@ -1,0 +1,7 @@
+if pages && pages > 1
+    nav(aria-label="Page navigation")
+        ul.pagination
+            -for (var p = 1; p <= pages; p++) {
+                li(class=(page == p ? 'active' : null))
+                    a(href="/" + urlQuery + p )=p
+            - }
