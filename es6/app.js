@@ -21,13 +21,16 @@ mongoose.connect("mongodb://localhost/iotdb", function(err) {
 });
 
 // Loading DB models.
-import user from './models/user';
-import stream from './models/stream';
+// To avoid re-declaring the variables and never use them,
+// so you can just import them without assignment:
+import './models/user';
+import './models/stream';
 
 // Loading routes.
 import index from './routes/index';
 import users from './routes/users';
 import streams from './routes/streams';
+import stream from './routes/stream';
 import input from './routes/input';
 import output from './routes/output';
 
@@ -74,6 +77,7 @@ app.use(methodOverride(function(req, res){
 app.use("/", index);
 app.use("/users", users);
 app.use("/streams", streams);
+app.use("/stream", stream);
 app.use("/input", input);
 app.use("/output", output);
 

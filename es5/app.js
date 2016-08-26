@@ -25,6 +25,7 @@ var streams = require("./models/stream");
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var streams = require("./routes/streams");
+var stream = require("./routes/stream");
 var input = require("./routes/input");
 var output = require("./routes/output");
 
@@ -70,6 +71,7 @@ app.use(methodOverride(function(req, res){
 app.use('/', routes);
 app.use('/users', users);
 app.use("/streams", streams);
+app.use("/stream", stream);
 app.use("/input", input);
 app.use("/output", output);
 

@@ -1,10 +1,13 @@
-var express = require('express');
-var router = express.Router();
+"use strict";
+
+// Import express and its router.
+import express from 'express';
+let router = express.Router();
 
 // Import the User schema and the authentication middleware.
-var mongoose = require("mongoose");
-var User = mongoose.model("User");
-var helper = require("../utils");
+import mongoose from 'mongoose';
+import helper from '../utils';
+let User = mongoose.model("User");
 
 /* GET users listing. */
 // router.get('/', function(req, res, next) {

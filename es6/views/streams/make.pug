@@ -5,7 +5,7 @@ block content
         div.row
             div.col-md-6.col-md-offset-3
                 h1 Create a Data Stream
-                form#formAddDataset(name="addStream", method="post", action="/streams")
+                form#formAddDataset(name="addStream", method="post", action="/streams", data-toggle="validator-not-working")
                     div.form-group.required
                         label.control-label(for="inputTitle") Title
                         input#inputTitle.form-control(type="text", placeholder="NIST Weather", name="title", required)
@@ -45,10 +45,11 @@ block content
                     </div>
                     div.form-group
                         label.control-label(for="inputStreamAlias") Stream Alias
-                        input#inputStreamAlias.form-control(type="text", placeholder="nist_weather", name="alias")
-                        // span.glyphicon.free.glyphicon-remove.form-control-feedback
-                        // span.glyphicon.taken.glyphicon-remove.form-control-feedback
-                        p.help-block.taken This alias is in use by another stream. <br /> <em>e.g. http://127.0.0.1:8080/<span class="alias_example">nist_weather</span></em>
+                        input#inputStreamAlias.form-control.stream-alias-search(type="text", placeholder="nist_weather", name="alias")
+                        span.glyphicon.glyphicon-ok.form-control-feedback.hide
+                        span.glyphicon.glyphicon-remove.form-control-feedback.hide
+                        p.help-block <span class="message"></span><em>e.g. http://127.0.0.1:8080/stream/<span class="alias-example">nist_weather</span></em>
+
                     div.form-group
                         label.control-label(for="inputTags") Tags
                         input#inputTags.form-control(type="text", placeholder="nist, weather", name="tags", data-role="tagsinput", class="tag-input")

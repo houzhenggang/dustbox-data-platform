@@ -1,6 +1,8 @@
-// On create and edit stream.
-// jquery disable form submit on enter
-// http://stackoverflow.com/questions/11235622/jquery-disable-form-submit-on-enter
+/**
+ * On create and edit stream.
+ * jquery disable form submit on enter
+ * http://stackoverflow.com/questions/11235622/jquery-disable-form-submit-on-enter
+ */
 $('form').on('keyup keypress', function(e) {
     var keyCode = e.keyCode || e.which;
     if (keyCode === 13) {
@@ -9,18 +11,23 @@ $('form').on('keyup keypress', function(e) {
     }
 });
 
-// On create and edit stream.
-//  keycode for enter (13), comma (44) and space (32)
-//  http://stackoverflow.com/questions/24554629/how-to-submit-a-tag-with-bootstrap-tags-input-plugin-with-space-key
+/**
+ * On create and edit stream.
+ * keycode for enter (13), comma (44) and space (32)
+ * http://stackoverflow.com/questions/24554629/how-to-submit-a-tag-with-bootstrap-tags-input-plugin-with-space-key
+ */
 $('.tag-input').tagsinput({
     confirmKeys: [13, 32, 44]
 });
 
-// On make stream.
-// Add new variable input if add button clicked
+/**
+ * On make stream.
+ */
+// Add new variable input if add button clicked.
+var id;
 $(".add-variable-btn").click(function(e) {
     e.preventDefault(); // prevents button from submitting
-    var id = Date.now();
+    id = Date.now();
     var html = '<li class="add-variable">\
                 <div class="row">\
                     <div class="col-md-5 col-sm-5 col-xs-5">\
@@ -38,21 +45,115 @@ $(".add-variable-btn").click(function(e) {
 });
 
 // Delete variable input if delete button clicked
-// we use the 'on' method here because otherwise newly inserted DOM elements wouldn't trigger 'click'
+// we use the 'on' method here because otherwise newly inserted DOM elements wouldn't trigger 'click'.
 $(document).on("click", ".delete-variable-btn", function(e) {
     e.preventDefault(); // prevents button from submitting
 
     $(this).closest("li").remove();
-    varId--;
+    id--;
 });
 
-// On edit stream.
-$("#edit-stream").click(function(){
+/**
+ * On make & edit stream.
+ */
+// Validate alias.
+var searchRequest = null;
+$(function () {
+    var minlength = 3;
+    var aliasTarget = $(".alias-example");
+    var aliasTargetValue = aliasTarget.text();
+
+    $(".stream-alias-search").keyup(function () {
+        var that = this;
+        var value = $(this).val();
+        var parent = $(this).parents('.form-group');
+        var message = $(".message", parent);
+        var glyphiconOk = $(".glyphicon-ok", parent);
+        var glyphiconNotOk = $(".glyphicon-remove", parent);
+        var exclude = $(this).data('exclude');
+
+        if (value.length >= minlength ) {
+            if (searchRequest != null) {
+                searchRequest.abort();
+            }
+            aliasTarget.text(value);
+            searchRequest = $.ajax({
+                type: "GET",
+                url: "/streams/alias-search",
+                data: {
+                    'search_keyword' : value,
+                    'exclude' : exclude
+                },
+                dataType: "json",
+                success: function(result){
+                    //we need to check if the value is the same
+                    if (value === $(that).val()) {
+                        //Receiving the result of search here
+                        console.log(result);
+                        if (result.message === 'OK') {
+                            parent.removeClass('has-error has-feedback').addClass('has-success has-feedback');
+                            glyphiconOk.removeClass('hide');
+                            glyphiconNotOk.removeClass('hide').addClass('hide');
+                            message.html("OK.<br />");
+                        } else {
+                            parent.removeClass('has-success has-feedback').addClass('has-error has-feedback');
+                            glyphiconNotOk.removeClass('hide');
+                            glyphiconOk.removeClass('hide').addClass('hide');
+                            message.html("This alias is in use by another stream.<br />");
+                        }
+                    }
+                }
+            });
+        } else {
+            parent.removeClass('has-success has-error has-feedback');
+            message.empty();
+            glyphiconNotOk.removeClass('hide').addClass('hide');
+            glyphiconOk.removeClass('hide').addClass('hide');
+            aliasTarget.text(aliasTargetValue);
+        }
+    });
+});
+
+/**
+ * On edit stream.
+ */
+$("#edit-stream").click(function() {
     $(this).parents('.manage-controls').hide();
     $('.edit-container').show();
 });
 
-// On show stream data.
+var speciesOld = [];
+$('#speciesList input').each(function () {
+    speciesOld.push(this.value);
+});
+
+// Show the warning modal before submission.
+// Must include your modal within your <form> </form>
+// @ref: http://stackoverflow.com/questions/36498445/when-submitting-a-form-bootstrap-modal-opens-but-when-clicking-the-ok-button
+$('.button-update').on('click', function (e) {
+    var speciesNew = [];
+    $('#speciesList input').each(function () {
+        speciesNew.push(this.value);
+    });
+
+    // Compare two Arrays are equal.
+    // http://stackoverflow.com/questions/22395357/how-to-compare-two-arrays-are-equal-using-javascript-or-jquery
+    var isSame = speciesOld.length == speciesNew.length && speciesOld.every(function(element, index) {
+        return element === speciesNew[index];
+    });
+
+    // Show the modal if two species arrays are different.
+    if (isSame === false) {
+        $('#myModalEditWarning').modal('show');
+        return false;
+    }
+    console.log(speciesNew);
+    return true;
+});
+
+/**
+ * On show stream data.
+ */
 $.fn.toLocaleDateTime = function() {
     $(this).each(function(index) {
         // console.log(index + ": " + $(this).text());
@@ -77,7 +178,6 @@ $.fn.toLocaleDateTime = function() {
         return $(this).text(date.toLocaleDateString('en-GB', options));
     });
 };
-
 $('.timestamp').toLocaleDateTime();
 
 // https://developers.google.com/maps/documentation/javascript/examples/places-autocomplete-addressform

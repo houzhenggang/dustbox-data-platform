@@ -1,12 +1,14 @@
-var express = require('express');
-var router = express.Router();
+"use strict";
 
-// Import dependencies.
-var mongoose = require("mongoose");
+// Import express and its router.
+import express from 'express';
+let router = express.Router();
 
 // Import the User schema and the authentication middleware.
-var Stream = mongoose.model("Stream");
-var helper = require("../utils");
+import mongoose from 'mongoose';
+import helper from '../utils';
+let Stream = mongoose.model("Stream");
+
 
 // GET request to read a stream data in json output.
 // @examples:

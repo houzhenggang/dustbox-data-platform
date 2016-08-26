@@ -62,11 +62,14 @@ block content
                       </div>
                     </div>
 
+
+
                 div.edit-container
                     - var disabled = isAdmin ? false : true;
                     - var readonly = isAdmin ? false : true;
                     h1 Edit Stream
-                    form#form_edit_stream(name="updateDataset", data-public=stream.public_key, data-private=stream.private_key, method="POST", action="/streams/" + stream.public_key + '/update/' + stream.private_key)
+                    form#form_edit_stream(name="updateDataset", data-public=stream.public_key, data-private=stream.private_key, method="POST", action="/streams/" + stream.public_key + '/update/' + stream.private_key, data-toggle="validator-not-working")
+
                         div.form-group.required
                             label.control-label(for="inputTitle") Title
                             input#inputTitle.form-control(type="text", placeholder="NIST Weather", name="title", value=stream.title, required, readonly=readonly)
@@ -115,10 +118,10 @@ block content
                         </div>
                         div.form-group
                             label.control-label(for="inputStreamAlias") Stream Alias
-                            input#inputStreamAlias.form-control(type="text", placeholder="nist_weather", name="alias", value=stream.alias, readonly=readonly)
-                            // span.glyphicon.free.glyphicon-remove.form-control-feedback
-                            // span.glyphicon.taken.glyphicon-remove.form-control-feedback
-                            p.help-block.taken This alias is in use by another stream. <br /> <em>e.g. http://127.0.0.1:8080/<span class="alias_example">nist_weather</span></em>
+                            input#inputStreamAlias.stream-alias-search.form-control(type="text", placeholder="nist_weather", name="alias", value=stream.alias, data-exclude=stream._id, readonly=readonly)
+                            span.glyphicon.glyphicon-ok.form-control-feedback.hide
+                            span.glyphicon.glyphicon-remove.form-control-feedback.hide
+                            p.help-block <span class="message"></span><em>e.g. http://127.0.0.1:8080/stream/<span class="alias-example">nist_weather</span></em>
                         div.form-group
                             label.control-label(for="inputTags") Tags
                             - var tags = stream.tags;
@@ -135,4 +138,28 @@ block content
                             input(type="hidden", name="location[lat]", value=stream.location.lat)
                             input(type="hidden", name="location[lng]", value=stream.location.lng)
                         input(type="hidden",value="PUT",name="_method")
-                        button#btnSubmit.btn.btn-primary(type="submit") Save
+                        input(type="hidden", name="_id", value=stream._id)
+                        button#btnSubmit.btn.btn-primary.button-update(type="submit") Save
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="myModalEditWarning" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                          <div class="modal-dialog" role="document">
+
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title text-left" id="myModalLabel">Warning</h4>
+                              </div>
+
+                              <div class="modal-body text-left">
+                                <p>You have changed the field definitions, and must clear your stream data to save the new definition. Are you sure you want to continue?</p>
+                                input(type="hidden",value="PUT",name="_method")
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-danger">OK</button>
+                              </div>
+
+                            </div>
+                          </div>
+                        </div>
